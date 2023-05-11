@@ -1,0 +1,678 @@
+// testing copy
+// last edited May 2023
+
+//"data" refers to the column name with no spaces and no capitals
+//punctuation or numbers in your column name
+//"title" is the column name you want to appear in the published table
+
+var columns = [
+    {
+        data: "hash",
+        title: "Hash",
+        render: function(data, type, row) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "doctype",
+        title: "DocType",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "author",
+        title: "Author",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "coauthors",
+        title: "Coauthors",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible: false
+    },
+    {
+        data: "title",
+        title: "Title",
+        render: function(data, row) {
+            if (row['priority'] == 1 || row['priority'] == 6) {
+                data = row['standalonework'];
+            } else if (data === undefined) {
+                data = "";
+            }
+            if (row['link'] !== '' && row['link'] !== undefined) {
+                data = `<a class="work-entry" href="${row['link']}" style="text-decoration:underline;">${data} <svg style="vertical-align:middle;" viewBox="0 -256 1850 1850" width="1em" height="1em"><g transform="matrix(1,0,0,-1,30.372881,1426.9492)"><path d="M 1408,608 V 288 Q 1408,169 1323.5,84.5 1239,0 1120,0 H 288 Q 169,0 84.5,84.5 0,169 0,288 v 832 Q 0,1239 84.5,1323.5 169,1408 288,1408 h 704 q 14,0 23,-9 9,-9 9,-23 v -64 q 0,-14 -9,-23 -9,-9 -23,-9 H 288 q -66,0 -113,-47 -47,-47 -47,-113 V 288 q 0,-66 47,-113 47,-47 113,-47 h 832 q 66,0 113,47 47,47 47,113 v 320 q 0,14 9,23 9,9 23,9 h 64 q 14,0 23,-9 9,-9 9,-23 z m 384,864 V 960 q 0,-26 -19,-45 -19,-19 -45,-19 -26,0 -45,19 L 1507,1091 855,439 q -10,-10 -23,-10 -13,0 -23,10 L 695,553 q -10,10 -10,23 0,13 10,23 l 652,652 -176,176 q -19,19 -19,45 0,26 19,45 19,19 45,19 h 512 q 26,0 45,-19 19,-19 19,-45 z" inkscape:connector-curvature="0" style="fill:currentColor"/></g></svg></a>`;
+            }
+            return data;
+        }
+    },
+    {
+        data: "standalonework",
+        title: "StandaloneWork",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "publisher",
+        title: "Publisher",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "vol",
+        title: "Volume-Issue",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible: false
+    },
+    {
+        data: "iss",
+        title: "Volume-Issue",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible: false
+    },
+    {
+        data: "fpage",
+        title: "First Page",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible: false
+    },
+    {
+        data: "lpage",
+        title: "Last Page",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible: false
+    },
+    {
+        data: "year",
+        title: "Year",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible: false
+    },
+    {
+        data: "link",
+        title: "Link",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "priority",
+        title: "Priority",
+        render: function(data) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "citationdisplay",
+        title: "CitationDisplay",
+        render: function(data, row) {
+
+            // needs to handle missing information gracefully.
+            // attach formatting to X_info variables
+
+            //format coauthor information
+            coauthor_info = '';
+            var coauthors = String(row['coauthors']).split(';');
+            if (coauthors.length === 1 && coauthors[0] !== '') {
+                coauthor_info = `With ${coauthors[0]}`;
+            } else if (coauthors.length > 1) {
+                authors_before_and = coauthors.slice(0,-1);
+                coauthor_info = `With ${authors_before_and.join(", ")} and ${coauthors.pop()}`;
+            }
+            if (coauthor_info !== '' && coauthor_info.charAt(coauthor_info.length - 1) !== '.') {
+                coauthor_info += '. ';
+            } 
+
+            // format citation info (italics)
+            var standalonework_info = `<i>${row['standalonework']}</i>`;
+            if (row['priority'] == 1 || row['priority'] == 6) {standalonework_info = '';}
+            else if (row['doctype'] === 'bookchapter') {standalonework_info = 'In ' + standalonework_info;}
+
+            var number_info = ''; 
+            if (row['vol'] !== '' && row['iss'] !== '') {number_info = `, vol. ${row['vol']}, no. ${row['iss']}`;} 
+            else if (row['vol'] !== '') {number_info = `, vol. ${row['vol']}`;}
+            else if (row['iss'] !== '') {number_info = `, no. ${row['iss']}`;}
+
+            var publisher_info = '';
+            if (row['publisher'] !== '') {
+                if (row['doctype'] === 'bookchapter') {
+                    publisher_info = `. ${row['publisher']}`
+                }
+                else {
+                    publisher_info = ` ${row['publisher']}`
+                }
+            }
+
+            var year_info = '';
+            if (row['year'] !== '') {year_info = ` (${row['year']})`;}
+
+            var page_info = '';
+            if (row['fpage'] !== '' && row['lpage'] !== '') {page_info = `: ${row['fpage']}–${row['lpage']}`;}
+            else if (row['fpage'] !== '') {page_info = `: ${row['fpage']}`;}
+            else if (row['lpage'] !== '') {page_info = `: ${row['lpage']}`;}
+            
+            data = `${coauthor_info}${standalonework_info}${number_info}${page_info}${publisher_info}${year_info}`;
+            
+            if (data.charAt(data.length - 1) !== ".") {data += '.';}
+
+            return data;
+        }
+    }
+];
+
+//define two custom functions (asc and desc) for string sorting
+jQuery.fn.dataTableExt.oSort['string-case-asc']  = function(x,y) {
+    return ((x < y) ? -1 : ((x > y) ?  0 : 0));
+};
+
+jQuery.fn.dataTableExt.oSort['string-case-desc'] = function(x,y) {
+    return ((x < y) ?  1 : ((x > y) ? -1 : 0));
+};
+
+function titleCase(str) {
+    return str
+        .split(' ')
+        .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+        .join(' ');
+}
+
+function categoryFormat(str) {
+    if (str == 'bookreview') {
+        return 'Book Reviews';
+    } else if (str == 'bookchapter') {
+        return 'Book Chapters';
+    } else if (str == 'conference') {
+        return 'Presentations'; 
+    } else if (str == 'testimony') {
+        return 'Congressional Testimonies';
+    } else if (str == 'otherwork') {
+        return 'Symposia, Blog Posts, Media';
+    } else {
+        return titleCase(str) + 's';
+    }
+
+    /*
+    switch(str) {
+        case (str == 'bookreview'): return 'Book Reviews';
+        case (str == 'bookchapter'): return 'Book Chapters';
+        case (str == 'conference'): return 'Presentations';
+        default: return titleCase(str)+'s';}
+    */
+}
+    
+
+function updateLayout(hash) {
+    if (hash) {
+        $(".topicSearch:contains('"+hash.replace("#","").replaceAll("-"," ")+"')").trigger('click');
+        document.getElementById("data-table-container").style.display = "table";
+        document.getElementById("selected-publications-header-desktop").style.display="block";
+        $("#selected-publications-header-mobile").addClass("yes-hash");
+        document.getElementById("welcome-blurb").style.display = "none";
+    } else { //otherwise, add "selected" to id="all" button
+        $("#all").addClass ("selected");
+        document.getElementById("data-table-container").style.display = "none";
+        document.getElementById("selected-publications-header-desktop").style.display="none !important";
+        $("#selected-publications-header-mobile").removeClass("yes-hash");
+        document.getElementById("welcome-blurb").style.display = "block";
+    }
+}
+
+/* Autocomplete function taken from w3schools
+creates a search bar with a dropdown of substring matches */
+
+function autocomplete(inp, arr) {
+    /*the autocomplete function takes two arguments,
+    the text field element and an array of possible autocompleted values:*/
+    var currentFocus;
+    /*execute a function when someone writes in the text field:*/
+    inp.addEventListener("input", function(e) {
+        var a, b, i, val = this.value;
+        /*close any already open lists of autocompleted values*/
+        closeAllLists();
+        if (!val) { return false;}
+        currentFocus = -1;
+        /*create a DIV element that will contain the items (values):*/
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        /*append the DIV element as a child of the autocomplete container:*/
+        this.parentNode.appendChild(a);
+        /*for each item in the array...*/
+        arr.forEach(function (arrayItem) {
+            if (arrayItem.name.toUpperCase().includes(val.toUpperCase())) {
+                b = document.createElement("DIV");
+                b.innerHTML = arrayItem.name;
+
+                /*insert a input field that will hold the current array item's value:*/
+                b.innerHTML += "<input type='hidden' value='" + arrayItem.name + "'>";
+                /*execute a function when someone clicks on the item value (DIV element):*/
+                    b.addEventListener("click", function(e) {
+                    /*insert the value for the autocomplete text field:*/
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    /* update hash to select correct faculty */
+                    window.location.hash="#"+arrayItem.hash;
+
+                    /*update page layout */
+                    updateLayout(window.location.hash);
+
+                    /*close the list of autocompleted values,
+                    (or any other open lists of autocompleted values:*/
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        });
+
+    });
+
+    /*execute a function presses a key on the keyboard:*/
+    inp.addEventListener("keydown", function(e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+          /*If the arrow DOWN key is pressed,
+          increase the currentFocus variable:*/
+          currentFocus++;
+          /*and and make the current item more visible:*/
+          addActive(x);
+        } else if (e.keyCode == 38) { //up
+          /*If the arrow UP key is pressed,
+          decrease the currentFocus variable:*/
+          currentFocus--;
+          /*and and make the current item more visible:*/
+          addActive(x);
+        } else if (e.keyCode == 13) {
+          /*If the ENTER key is pressed, prevent the form from being submitted,*/
+          e.preventDefault();
+          if (currentFocus > -1) {
+            /*and simulate a click on the "active" item:*/
+            if (x) x[currentFocus].click();
+          }
+        }
+    });
+    function addActive(x) {
+      /*a function to classify an item as "active":*/
+      if (!x) return false;
+      /*start by removing the "active" class on all items:*/
+      removeActive(x);
+      if (currentFocus >= x.length) currentFocus = 0;
+      if (currentFocus < 0) currentFocus = (x.length - 1);
+      /*add class "autocomplete-active":*/
+      x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+      /*a function to remove the "active" class from all autocomplete items:*/
+      for (var i = 0; i < x.length; i++) {
+        x[i].classList.remove("autocomplete-active");
+      }
+    }
+    function closeAllLists(elmnt) {
+      /*close all autocomplete lists in the document,
+      except the one passed as an argument:*/
+      var x = document.getElementsByClassName("autocomplete-items");
+      for (var i = 0; i < x.length; i++) {
+        if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+
+// ================== START OF SCRIPT ================== //
+
+$(document).ready(function() {
+    $('#demo').html('<div id="faculty-search-wrapper" class="autocomplete"></div>');
+    $('#faculty-search-wrapper').html('<span id="search-icon-wrapper" class="input"><i class="glyphicon glyphicon-search"></i></span>');
+    $('#faculty-search-wrapper').after('<h3 id="selected-publications-header-mobile" class="selected-publications-header">Selected Publications</h3>');
+    $('#search-icon-wrapper').after('<input id="myInput" class="expand" type="text" placeholder="Faculty name..."></input>');
+    document.querySelector('#search-icon-wrapper').addEventListener('click', function() {
+        document.querySelector('#myInput').classList.toggle('expand');
+      });
+    $('#selected-publications-header-mobile').after('<div id="columns-wrapper"></div>'); 
+    $('#columns-wrapper').html('<div id="first-column" class="col-md-4"></div>');
+    $('#first-column').after('<div id="second-column" class="col-md-8"><table id="data-table-container" class="display table table-bordered table-striped row-border" cellpadding="0" cellspacing="0" border="0"></table></div>'); 
+    $('#selected-publications-header-mobile').after('<p id="welcome-blurb">Welcome to the Selected Faculty Publications page. Please search for a faculty member.</p>');
+    $('#data-table-container').before('<h3 id="selected-publications-header-desktop" class="selected-publications-header">Selected Publications</h3>')
+    var faculty_info_list = [];
+    var faculty_names = [];
+
+    // if hash exists, add "selected" to appropriate button
+    if (window.location.hash) {document.querySelector('#myInput').classList.remove('expand');}
+
+    $.ajax({
+        url: "https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/faculty!A:F?key=REDACTED",
+        type: "GET",
+        async: false, //important
+        success: function(data) {
+            data.values.forEach(function(item, index) {
+                entry = {
+                    "hash": item[0],
+                    "name": item[1],
+                    "title": item[2],
+                    "image": item[3],
+                    "profile": item[4],
+                    "cv": item[5]
+                }
+                faculty_info_list.push(entry);
+
+                entry = {
+                    "hash": item[0],
+                    "name": item[1]
+                }
+                
+                faculty_names.push(entry);
+            });
+        },
+        error: function(error) {
+            console.log(`Error ${error}`);
+        }
+    })
+
+    faculty_info_list.shift();
+    faculty_names.shift();
+
+    function createMenu() { 
+        // hide all td class="answer"
+        $("td.answer")
+            .hide();
+        
+        //replace td class="preLoad" with the arrow icon to right of entry
+        $("td.preLoad")
+            .append("<span class='answer-tab icon-arrow-right'></span>")
+            .removeClass("preLoad");
+        
+        // On click, toggle arrow & slide states
+        // NB $(this) selector
+        $("td.question")
+            .click(function(){
+                $(this)
+                    .find("span.answer-tab")
+                    .toggleClass("icon-arrow-right")
+                    .toggleClass("icon-arrow-down")
+                    .parent().parent()
+                    .find("td.answer")
+                    .slideToggle();
+                return false;
+            });
+        
+        // on click show ALL td.answer & turn all arrows down
+        // NB no $(this) selector
+        $(".all-answers")
+            .click(function(){
+                $("td.answer")
+                    .slideDown();
+                $(".answer-tab")
+                    .removeClass("icon-arrow-right")
+                    .addClass("icon-arrow-down");
+                return false;
+            });
+
+        //on click hide ALL td.answer & turn all arrows right
+        $(".no-answers")
+            .click(function(){
+                $("td.answer")
+                    .slideUp();
+                $(".answer-tab")
+                    .removeClass("icon-arrow-down")
+                    .addClass("icon-arrow-right");
+                return false;
+            });
+
+        //add credit image
+        $('#data-table-container').after('<img src="https://www.bc.edu/content/dam/bc1/schools/law/js/library/publication-lists/built_by_bcll_400.png" alt="this application was built by the staff of the Boston College Law Library" width="150" id="library-credit">');
+
+        // if hash exists, add "selected" to appropriate button
+
+        updateLayout(window.location.hash);
+
+    } // END createMenu()
+
+    // create variable faqTable.
+    // I'm guessing this is what creates the <thead> and <tbody> in the first place
+    var faqTable = $('#data-table-container').dataTable({
+        // faqTable is a dataTable with these features:
+        // add markup for Filtering input,
+        // displaying the Table,
+        // and pRocessing display element
+        "dom": 'ftr',
+        // disable automatic column width calculation
+        "autoWidth": false,
+        // set number of rows in a single page to 999
+        "pageLength": 999,
+        // load data for table content from an Ajax source
+        "ajax": { // pull data from google sheet via Sheets API V4
+            url:"https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/pubs!A:N?key=REDACTED",
+            // set caching to true
+            cache: true,
+            // manipulate the Gsheet data
+            "dataSrc": function(json) {
+                
+                // spreadsheet data lives in an array with the name values
+                var myData = json['values'];
+                
+                // rewrite data to an object with key-value pairs.
+                // This is also a chance to rename or ignore columns
+                // Q: Do we need the 'i'?
+
+                // map each row in myData to a function(n)
+                // which turns each row into an object
+                // consisting of key-value pairs
+                myData = myData.map(function( n, i ) {
+                    myObject = {
+                        hash:n[0],
+                        doctype: n[1],
+                        author:n[2],
+                        coauthors:n[3],
+                        title:n[4],
+                        standalonework:n[5],
+                        publisher:n[6],
+                        vol:n[7],
+                        iss:n[8],
+                        fpage:n[9],
+                        lpage:n[10],
+                        year:n[11],
+                        link:n[12],
+                        priority:n[13],
+                        citationdisplay:n[12]
+                    };
+                    return myObject;
+                }); // now myData is an array of objects of key-value pairs
+                //remove the first row, which contains the orginal column headers
+                myData.splice(0,1); 
+                return myData;
+            } // END dataSrc
+        }, // END ajax
+
+        // var columns gets called here as part of dataTable
+        // var columns sets behavior for the data imported through Ajax
+        'columns': columns,
+
+        // sort first by hash, then by priority, then by doctype, then by year, then by title
+        'order': [[ 0, "asc" ], [13,"asc"], [1, "asc"], [ 11, "desc" ], [4, "asc"]],
+
+        /*
+        // hide the first, second, and third columns in the table.
+        "columnDefs" : [
+            { "targets": [0,1,2], "visible": false}
+        ],*/
+
+        // when the table has fully loaded, create the menu buttons
+        'initComplete' : function (settings) {
+            createMenu();
+            autocomplete(document.getElementById("myInput"), faculty_names);
+        },
+
+        // each time the table is (re-)drawn, take these actions
+        'drawCallback': function ( settings ) {
+
+            // get data for the rows in the draw (FROM WHERE???)
+            var api = this.api(); 
+
+            // ?????
+            var rows = api.rows( {page:'current'} ).nodes();
+            // ????
+            var last=null;
+
+            // for each cell in the Area column (column 0)
+            api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                // if the last cell is not the same as the current cell,
+                if ( last !== group ) {
+                    // before the current row,
+                    $(rows).eq( i ).before(
+                        // insert the "group" title (the area) row
+                        // e.g. Academic Services, Centers
+                        `<tr class="group"><td colspan="2">${categoryFormat(String(group))}</td></tr>`
+                    );
+
+                    // then set the "last" cell to the current.
+                    last = group;
+                }
+            }); // END each()
+
+            // Get anything that's class 'dataTable',
+            // turn it into a dataTable,
+            // then store it in var tables
+            var tables = $('.dataTable').DataTable();
+
+            if ($(".left-list")[0]) {
+            } else {
+                $('div.dataTables_filter').wrap('<div class="left-list"></div>');
+                //$('div.left-list').append('<ul id="second-list" class="buttons secondary"><li><span class="all-answers">Open all answers</span></li><li><span class="no-answers">Close all answers</span></li></ul>');
+                $('div.left-list').before('<div id="topics-list"><ul id="top-list" class="buttons"></ul></div>');
+            }
+            
+            // ================================================================= //
+            // if the number of areas is less than or equal to 1,
+            // AND the length of the first cell of the first column is > 0?
+
+            if ($('ul#top-list li').length <= 1 && api.columns(0).data()[0].length > 0) {
+                var subjectList=
+                    api
+                        .columns( 0, {search:'applied'} ) //???
+                        .data()
+                        .eq( 0 )      // Reduce the 2D array into a 1D array of data
+                        .sort()       // Sort data alphabetically
+                        .unique();     // Reduce to unique values
+                var cList = $('ul#top-list');
+                var liAll = $('<li/>')//Add link for all areas
+                    .appendTo(cList);
+                var spanAll = $('<span/>')
+                    .addClass('selected allTopics btn btn-default btn-red short_name')
+                    .attr('id','all')
+                    .text('All Topics')
+                    .appendTo(liAll);
+
+                //create subject menu
+                $.each(subjectList, function(i) {
+                        var li = $('<li/>')
+                            .appendTo(cList);
+                        var span = $('<span class="btn btn-default btn-red"></span>')
+                            .addClass('topicSearch')
+                            .text(subjectList[i].toLowerCase());
+                        if (subjectList[i].length < 22) {
+                            span.addClass('short_name');
+                        } 
+                        span.appendTo(li);
+                        //console.log('added subject');
+                    }
+                );
+
+                //add function to search buttons
+                $('span.topicSearch').click (function() {
+                    $("#top-list span").removeClass("selected");
+                    $(this).addClass("selected");
+                    
+                    var search = $(this).text();
+                    //console.log(search);
+                    tables.search("");
+                    tables.column(0).search( search, true, false ).draw();
+                    history.pushState("", document.title, "#"+search.replaceAll(" ","-"));
+
+                    if ((document.getElementById("faculty-info-card"))) {
+                        $("#faculty-info-card").remove();
+                    }
+
+                    var faculty_info = faculty_info_list.find(({hash}) => "#"+hash === window.location.hash);
+
+                    $("#first-column").html('<div id="faculty-info-card" class="card d-flex flex-column"><div class="card-body p-4"><div id="image-and-blurb" class="d-flex text-black"></div></div></div>');
+                    $("#image-and-blurb").html('<div id="image-wrapper" class="flex-shrink-0"><img id="faculty-image" class="img-circle"></div>');
+                    $('#image-wrapper').after('<div id="faculty-info-wrapper" class="flex-grow-1 ms-3"></div>');
+                    $('#faculty-info-wrapper').html('<div id="faculty-text-wrapper"><h3></h3><p style="color: #2b2a2a;"></p></div><div id="buttons-wrapper" class="d-flex pt-1 align-bottom">');
+                    
+                    console.log('hello');
+                    console.log(faculty_info.profile);
+                    console.log(faculty_info.cv);
+
+                    if (faculty_info.cv === undefined || faculty_info.cv === '') {
+                        $('#buttons-wrapper').html('<a id="profile-button" class="btn btn-primary btn-red me-1 flex-1 mt-auto" type="button">Profile</a>');
+                        $('#profile-button').attr("href", faculty_info.profile);
+                    } else {
+                        $('#buttons-wrapper').html('<a id="profile-button" class="btn btn-primary btn-red me-1 flex-1 mt-auto" type="button">Profile</a><a id="cv-button" class="btn btn-primary btn-red flex-1 mt-auto" type="button">CV</a>')
+                        $('#profile-button').attr("href", faculty_info.profile);
+                        $('#cv-button').attr("href", faculty_info.cv);
+                    }
+
+                    $('#image-wrapper img').attr("src", faculty_info.image);
+                    $('#faculty-info-wrapper h3').html(faculty_info.name);
+                    $('#faculty-info-wrapper p').html(faculty_info.title);
+                    // $('#profile-button').attr("href", faculty_info.profile);
+                    // $('#cv-button').attr("href", faculty_info.cv);
+                });
+                // add function to "All Works" button
+                $("span#all")
+                    .click(function(){
+                        $("#top-list span").removeClass("selected");
+                        $(this).addClass("selected");
+                        tables.search("");
+                        tables.column(0).search( "", true, false ).draw();
+                        history.pushState("", document.title, window.location.href.split('#')[0]);
+                        $("#faculty-info-card").remove();
+                    });
+                $('.dataTables_filter input').attr('placeholder',' Keyword, etc...');
+            };
+        } // END drawCallback
+    }); // END faqTable
+}); //end $(document).ready
+  
+
