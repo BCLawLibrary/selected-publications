@@ -1,15 +1,16 @@
-// testing copy
-// last edited May 2023
-
-//"data" refers to the column name with no spaces and no capitals
-//punctuation or numbers in your column name
-//"title" is the column name you want to appear in the published table
+/**
+ * The following program was written by the Department of Collection Services & Digital Initiatives at the Boston College Law Library.
+ * It is a web application that presents a curated selection of the publications of the faculty of Boston College Law School.
+ * It is displayed on its own page:
+ * (https://www.bc.edu/content/bc-web/schools/law/sites/students/library/using/faculty-services/selected-publications.html)
+ */
 
 var columns = [
     {
         data: "hash",
         title: "Hash",
-        render: function(data, type, row) {
+        // (type, row) args are *required*!
+        render: function(data, type, row) { 
             if (data === undefined) {data = "";}
             return data;
         },
@@ -18,7 +19,7 @@ var columns = [
     {
         data: "doctype",
         title: "DocType",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -27,7 +28,7 @@ var columns = [
     {
         data: "author",
         title: "Author",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -36,7 +37,7 @@ var columns = [
     {
         data: "coauthors",
         title: "Coauthors",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -45,14 +46,32 @@ var columns = [
     {
         data: "title",
         title: "Title",
-        render: function(data, row) {
+        render: function(data, type, row) {
+            // Books (=1) and other works (=6) are "standalone works"
+            // which do not exist within a journal/review or edited volume.
             if (row['priority'] == 1 || row['priority'] == 6) {
                 data = row['standalonework'];
             } else if (data === undefined) {
                 data = "";
             }
             if (row['link'] !== '' && row['link'] !== undefined) {
-                data = `<a class="work-entry" href="${row['link']}" style="text-decoration:underline;">${data} <svg style="vertical-align:middle;" viewBox="0 -256 1850 1850" width="1em" height="1em"><g transform="matrix(1,0,0,-1,30.372881,1426.9492)"><path d="M 1408,608 V 288 Q 1408,169 1323.5,84.5 1239,0 1120,0 H 288 Q 169,0 84.5,84.5 0,169 0,288 v 832 Q 0,1239 84.5,1323.5 169,1408 288,1408 h 704 q 14,0 23,-9 9,-9 9,-23 v -64 q 0,-14 -9,-23 -9,-9 -23,-9 H 288 q -66,0 -113,-47 -47,-47 -47,-113 V 288 q 0,-66 47,-113 47,-47 113,-47 h 832 q 66,0 113,47 47,47 47,113 v 320 q 0,14 9,23 9,9 23,9 h 64 q 14,0 23,-9 9,-9 9,-23 z m 384,864 V 960 q 0,-26 -19,-45 -19,-19 -45,-19 -26,0 -45,19 L 1507,1091 855,439 q -10,-10 -23,-10 -13,0 -23,10 L 695,553 q -10,10 -10,23 0,13 10,23 l 652,652 -176,176 q -19,19 -19,45 0,26 19,45 19,19 45,19 h 512 q 26,0 45,-19 19,-19 19,-45 z" inkscape:connector-curvature="0" style="fill:currentColor"/></g></svg></a>`;
+                // <svg> is the "link-out" icon
+                data = `<a class="work-entry" href="${row['link']}" 
+                            style="text-decoration:underline;">${data} 
+                            <svg style="vertical-align:middle;" viewBox="0 -256 1850 1850" width="1em" height="1em">
+                                <g transform="matrix(1,0,0,-1,30.372881,1426.9492)">
+                                <path d="M 1408,608 V 288 Q 1408,169 1323.5,84.5 1239,0 1120,0 
+                                H 288 Q 169,0 84.5,84.5 0,169 0,288 v 832 Q 0,1239 84.5,1323.5 169,1408 288,1408 
+                                h 704 q 14,0 23,-9 9,-9 9,-23 v -64 q 0,-14 -9,-23 -9,-9 -23,-9 
+                                H 288 q -66,0 -113,-47 -47,-47 -47,-113 V 288 q 0,-66 47,-113 47,-47 113,-47 
+                                h 832 q 66,0 113,47 47,47 47,113 v 320 q 0,14 9,23 9,9 23,9 h 64 q 14,0 23,-9 9,-9 9,-23 
+                                z m 384,864 V 960 q 0,-26 -19,-45 -19,-19 -45,-19 -26,0 -45,19 
+                                L 1507,1091 855,439 q -10,-10 -23,-10 -13,0 -23,10 L 695,553 q -10,10 -10,23 0,13 10,23 
+                                l 652,652 -176,176 q -19,19 -19,45 0,26 19,45 19,19 45,19 
+                                h 512 q 26,0 45,-19 19,-19 19,-45 z" inkscape:connector-curvature="0" style="fill:currentColor"/>
+                                </g>
+                            </svg>
+                        </a>`;
             }
             return data;
         }
@@ -60,7 +79,7 @@ var columns = [
     {
         data: "standalonework",
         title: "StandaloneWork",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -69,7 +88,7 @@ var columns = [
     {
         data: "publisher",
         title: "Publisher",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -78,7 +97,7 @@ var columns = [
     {
         data: "vol",
         title: "Volume-Issue",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -87,7 +106,7 @@ var columns = [
     {
         data: "iss",
         title: "Volume-Issue",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -96,7 +115,7 @@ var columns = [
     {
         data: "fpage",
         title: "First Page",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -105,7 +124,7 @@ var columns = [
     {
         data: "lpage",
         title: "Last Page",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -114,7 +133,7 @@ var columns = [
     {
         data: "year",
         title: "Year",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -123,7 +142,7 @@ var columns = [
     {
         data: "link",
         title: "Link",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -132,7 +151,7 @@ var columns = [
     {
         data: "priority",
         title: "Priority",
-        render: function(data) {
+        render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
         },
@@ -141,12 +160,10 @@ var columns = [
     {
         data: "citationdisplay",
         title: "CitationDisplay",
-        render: function(data, row) {
-
-            // needs to handle missing information gracefully.
-            // attach formatting to X_info variables
-
-            //format coauthor information
+        render: function(data, type, row) {
+            // Attach formatting to "[field]_info" variables
+            
+            // Format coauthor information
             coauthor_info = '';
             var coauthors = String(row['coauthors']).split(';');
             if (coauthors.length === 1 && coauthors[0] !== '') {
@@ -159,8 +176,12 @@ var columns = [
                 coauthor_info += '. ';
             } 
 
-            // format citation info (italics)
+            // Format information about "standalone works"
+            // (book/journal/media --- all "stand-alone" units)
             var standalonework_info = `<i>${row['standalonework']}</i>`;
+
+            // If work at hand is a book (=1) or other media (=6)
+            // Remove info because it's placed in the Title field instead
             if (row['priority'] == 1 || row['priority'] == 6) {standalonework_info = '';}
             else if (row['doctype'] === 'bookchapter') {standalonework_info = 'In ' + standalonework_info;}
 
@@ -189,6 +210,7 @@ var columns = [
             
             data = `${coauthor_info}${standalonework_info}${number_info}${page_info}${publisher_info}${year_info}`;
             
+            // Add period if string doesn't end in period
             if (data.charAt(data.length - 1) !== ".") {data += '.';}
 
             return data;
@@ -196,7 +218,7 @@ var columns = [
     }
 ];
 
-//define two custom functions (asc and desc) for string sorting
+// Define two custom functions (asc and desc) for string sorting
 jQuery.fn.dataTableExt.oSort['string-case-asc']  = function(x,y) {
     return ((x < y) ? -1 : ((x > y) ?  0 : 0));
 };
@@ -223,17 +245,11 @@ function categoryFormat(str) {
         return 'Congressional Testimonies';
     } else if (str == 'otherwork') {
         return 'Symposia, Blog Posts, Media';
+    } else if (str == 'video') {
+        return 'On Video';
     } else {
         return titleCase(str) + 's';
     }
-
-    /*
-    switch(str) {
-        case (str == 'bookreview'): return 'Book Reviews';
-        case (str == 'bookchapter'): return 'Book Chapters';
-        case (str == 'conference'): return 'Presentations';
-        default: return titleCase(str)+'s';}
-    */
 }
     
 
@@ -244,7 +260,7 @@ function updateLayout(hash) {
         document.getElementById("selected-publications-header-desktop").style.display="block";
         $("#selected-publications-header-mobile").addClass("yes-hash");
         document.getElementById("welcome-blurb").style.display = "none";
-    } else { //otherwise, add "selected" to id="all" button
+    } else { // Otherwise, add "selected" to id="all" button
         $("#all").addClass ("selected");
         document.getElementById("data-table-container").style.display = "none";
         document.getElementById("selected-publications-header-desktop").style.display="none !important";
@@ -359,7 +375,7 @@ function autocomplete(inp, arr) {
 }
 
 
-// ================== START OF SCRIPT ================== //
+// ================== START OF EXECUTION ================== //
 
 $(document).ready(function() {
     $('#demo').html('<div id="faculty-search-wrapper" class="autocomplete"></div>');
@@ -377,13 +393,13 @@ $(document).ready(function() {
     var faculty_info_list = [];
     var faculty_names = [];
 
-    // if hash exists, add "selected" to appropriate button
+    // If hash exists, add "selected" to appropriate button
     if (window.location.hash) {document.querySelector('#myInput').classList.remove('expand');}
 
     $.ajax({
         url: "https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/faculty!A:F?key=REDACTED",
         type: "GET",
-        async: false, //important
+        async: false, // Important!
         success: function(data) {
             data.values.forEach(function(item, index) {
                 entry = {
@@ -413,91 +429,25 @@ $(document).ready(function() {
     faculty_names.shift();
 
     function createMenu() { 
-        // hide all td class="answer"
-        $("td.answer")
-            .hide();
-        
-        //replace td class="preLoad" with the arrow icon to right of entry
-        $("td.preLoad")
-            .append("<span class='answer-tab icon-arrow-right'></span>")
-            .removeClass("preLoad");
-        
-        // On click, toggle arrow & slide states
-        // NB $(this) selector
-        $("td.question")
-            .click(function(){
-                $(this)
-                    .find("span.answer-tab")
-                    .toggleClass("icon-arrow-right")
-                    .toggleClass("icon-arrow-down")
-                    .parent().parent()
-                    .find("td.answer")
-                    .slideToggle();
-                return false;
-            });
-        
-        // on click show ALL td.answer & turn all arrows down
-        // NB no $(this) selector
-        $(".all-answers")
-            .click(function(){
-                $("td.answer")
-                    .slideDown();
-                $(".answer-tab")
-                    .removeClass("icon-arrow-right")
-                    .addClass("icon-arrow-down");
-                return false;
-            });
-
-        //on click hide ALL td.answer & turn all arrows right
-        $(".no-answers")
-            .click(function(){
-                $("td.answer")
-                    .slideUp();
-                $(".answer-tab")
-                    .removeClass("icon-arrow-down")
-                    .addClass("icon-arrow-right");
-                return false;
-            });
-
-        //add credit image
+        // Add credit image
         $('#data-table-container').after('<img src="https://www.bc.edu/content/dam/bc1/schools/law/js/library/publication-lists/built_by_bcll_400.png" alt="this application was built by the staff of the Boston College Law Library" width="150" id="library-credit">');
-
-        // if hash exists, add "selected" to appropriate button
-
+        
         updateLayout(window.location.hash);
+    }
 
-    } // END createMenu()
+    // Create datatable
+    var pubTable = $('#data-table-container').dataTable({
 
-    // create variable faqTable.
-    // I'm guessing this is what creates the <thead> and <tbody> in the first place
-    var faqTable = $('#data-table-container').dataTable({
-        // faqTable is a dataTable with these features:
-        // add markup for Filtering input,
-        // displaying the Table,
-        // and pRocessing display element
+        // FTR = Filter input; display Table; pRocess display element
         "dom": 'ftr',
-        // disable automatic column width calculation
         "autoWidth": false,
-        // set number of rows in a single page to 999
-        "pageLength": 999,
-        // load data for table content from an Ajax source
-        "ajax": { // pull data from google sheet via Sheets API V4
+        "pageLength": 999, // Number of rows in page
+        "ajax": { // Pull data from Google Sheet via Sheets API v4
             url:"https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/pubs!A:N?key=REDACTED",
-            // set caching to true
             cache: true,
-            // manipulate the Gsheet data
             "dataSrc": function(json) {
-                
-                // spreadsheet data lives in an array with the name values
+            
                 var myData = json['values'];
-                
-                // rewrite data to an object with key-value pairs.
-                // This is also a chance to rename or ignore columns
-                // Q: Do we need the 'i'?
-
-                // map each row in myData to a function(n)
-                // which turns each row into an object
-                // consisting of key-value pairs
                 myData = myData.map(function( n, i ) {
                     myObject = {
                         hash:n[0],
@@ -517,85 +467,58 @@ $(document).ready(function() {
                         citationdisplay:n[12]
                     };
                     return myObject;
-                }); // now myData is an array of objects of key-value pairs
-                //remove the first row, which contains the orginal column headers
-                myData.splice(0,1); 
+                });
+                myData.splice(0,1); // Remove header row 
                 return myData;
             } // END dataSrc
         }, // END ajax
-
-        // var columns gets called here as part of dataTable
-        // var columns sets behavior for the data imported through Ajax
         'columns': columns,
 
-        // sort first by hash, then by priority, then by doctype, then by year, then by title
+        // Sort by hash, then by priority, then by doctype, then by year, then by title
         'order': [[ 0, "asc" ], [13,"asc"], [1, "asc"], [ 11, "desc" ], [4, "asc"]],
 
-        /*
-        // hide the first, second, and third columns in the table.
-        "columnDefs" : [
-            { "targets": [0,1,2], "visible": false}
-        ],*/
-
-        // when the table has fully loaded, create the menu buttons
+        // When the table has fully loaded
         'initComplete' : function (settings) {
             createMenu();
             autocomplete(document.getElementById("myInput"), faculty_names);
         },
 
-        // each time the table is (re-)drawn, take these actions
+        // Each time the table is (re-)drawn
         'drawCallback': function ( settings ) {
-
-            // get data for the rows in the draw (FROM WHERE???)
             var api = this.api(); 
-
-            // ?????
             var rows = api.rows( {page:'current'} ).nodes();
-            // ????
             var last=null;
 
-            // for each cell in the Area column (column 0)
+            // Insert work type header ("Articles", etc)  
             api.column(1, {page:'current'} ).data().each( function ( group, i ) {
-                // if the last cell is not the same as the current cell,
                 if ( last !== group ) {
-                    // before the current row,
                     $(rows).eq( i ).before(
-                        // insert the "group" title (the area) row
-                        // e.g. Academic Services, Centers
                         `<tr class="group"><td colspan="2">${categoryFormat(String(group))}</td></tr>`
                     );
-
-                    // then set the "last" cell to the current.
                     last = group;
                 }
-            }); // END each()
+            });
 
-            // Get anything that's class 'dataTable',
-            // turn it into a dataTable,
-            // then store it in var tables
             var tables = $('.dataTable').DataTable();
 
+            // Create "left-list" if it doesn't exist
+            // Necessary for search functionality?
             if ($(".left-list")[0]) {
             } else {
                 $('div.dataTables_filter').wrap('<div class="left-list"></div>');
-                //$('div.left-list').append('<ul id="second-list" class="buttons secondary"><li><span class="all-answers">Open all answers</span></li><li><span class="no-answers">Close all answers</span></li></ul>');
                 $('div.left-list').before('<div id="topics-list"><ul id="top-list" class="buttons"></ul></div>');
             }
             
-            // ================================================================= //
-            // if the number of areas is less than or equal to 1,
-            // AND the length of the first cell of the first column is > 0?
-
             if ($('ul#top-list li').length <= 1 && api.columns(0).data()[0].length > 0) {
                 var subjectList=
                     api
-                        .columns( 0, {search:'applied'} ) //???
+                        .columns( 0, {search:'applied'} )
                         .data()
                         .eq( 0 )      // Reduce the 2D array into a 1D array of data
                         .sort()       // Sort data alphabetically
                         .unique();     // Reduce to unique values
                 var cList = $('ul#top-list');
-                var liAll = $('<li/>')//Add link for all areas
+                var liAll = $('<li/>') // Add link for all areas
                     .appendTo(cList);
                 var spanAll = $('<span/>')
                     .addClass('selected allTopics btn btn-default btn-red short_name')
@@ -603,7 +526,7 @@ $(document).ready(function() {
                     .text('All Topics')
                     .appendTo(liAll);
 
-                //create subject menu
+                // Create subject menu
                 $.each(subjectList, function(i) {
                         var li = $('<li/>')
                             .appendTo(cList);
@@ -614,17 +537,15 @@ $(document).ready(function() {
                             span.addClass('short_name');
                         } 
                         span.appendTo(li);
-                        //console.log('added subject');
                     }
                 );
 
-                //add function to search buttons
+                // Add function to search buttons
                 $('span.topicSearch').click (function() {
                     $("#top-list span").removeClass("selected");
                     $(this).addClass("selected");
                     
                     var search = $(this).text();
-                    //console.log(search);
                     tables.search("");
                     tables.column(0).search( search, true, false ).draw();
                     history.pushState("", document.title, "#"+search.replaceAll(" ","-"));
@@ -633,16 +554,12 @@ $(document).ready(function() {
                         $("#faculty-info-card").remove();
                     }
 
-                    var faculty_info = faculty_info_list.find(({hash}) => "#"+hash === window.location.hash);
-
                     $("#first-column").html('<div id="faculty-info-card" class="card d-flex flex-column"><div class="card-body p-4"><div id="image-and-blurb" class="d-flex text-black"></div></div></div>');
                     $("#image-and-blurb").html('<div id="image-wrapper" class="flex-shrink-0"><img id="faculty-image" class="img-circle"></div>');
                     $('#image-wrapper').after('<div id="faculty-info-wrapper" class="flex-grow-1 ms-3"></div>');
-                    $('#faculty-info-wrapper').html('<div id="faculty-text-wrapper"><h3></h3><p style="color: #2b2a2a;"></p></div><div id="buttons-wrapper" class="d-flex pt-1 align-bottom">');
-                    
-                    console.log('hello');
-                    console.log(faculty_info.profile);
-                    console.log(faculty_info.cv);
+                    $('#faculty-info-wrapper').html('<div id="faculty-text-wrapper"><h3></h3><p style="color: #2b2a2a;"></p></div><div id="buttons-wrapper" class="d-flex pt-1 align-bottom">');   
+                
+                    var faculty_info = faculty_info_list.find(({hash}) => "#"+hash === window.location.hash);
 
                     if (faculty_info.cv === undefined || faculty_info.cv === '') {
                         $('#buttons-wrapper').html('<a id="profile-button" class="btn btn-primary btn-red me-1 flex-1 mt-auto" type="button">Profile</a>');
@@ -652,24 +569,10 @@ $(document).ready(function() {
                         $('#profile-button').attr("href", faculty_info.profile);
                         $('#cv-button').attr("href", faculty_info.cv);
                     }
-
                     $('#image-wrapper img').attr("src", faculty_info.image);
                     $('#faculty-info-wrapper h3').html(faculty_info.name);
                     $('#faculty-info-wrapper p').html(faculty_info.title);
-                    // $('#profile-button').attr("href", faculty_info.profile);
-                    // $('#cv-button').attr("href", faculty_info.cv);
                 });
-                // add function to "All Works" button
-                $("span#all")
-                    .click(function(){
-                        $("#top-list span").removeClass("selected");
-                        $(this).addClass("selected");
-                        tables.search("");
-                        tables.column(0).search( "", true, false ).draw();
-                        history.pushState("", document.title, window.location.href.split('#')[0]);
-                        $("#faculty-info-card").remove();
-                    });
-                $('.dataTables_filter input').attr('placeholder',' Keyword, etc...');
             };
         } // END drawCallback
     }); // END faqTable
