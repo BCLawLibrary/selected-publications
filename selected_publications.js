@@ -3,13 +3,17 @@
  * It is a web application that presents a curated selection of the publications of the faculty of Boston College Law School.
  * It is displayed on its own page:
  * (https://www.bc.edu/content/bc-web/schools/law/sites/students/library/using/faculty-services/selected-publications.html)
+
+   Last edited on 13 February 2024, 10:44AM.
  */
+
 
 var columns = [
     {
         data: "hash",
         title: "Hash",
         // (type, row) args are *required*!
+        // I don't know why.
         render: function(data, type, row) { 
             if (data === undefined) {data = "";}
             return data;
@@ -19,6 +23,15 @@ var columns = [
     {
         data: "doctype",
         title: "DocType",
+        render: function(data, type, row) {
+            if (data === undefined) {data = "";}
+            return data;
+        },
+        visible:false
+    },
+    {
+        data: "priority",
+        title: "Priority",
         render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
@@ -44,13 +57,13 @@ var columns = [
         visible: false
     },
     {
-        data: "title",
-        title: "Title",
+        data: "partwork",
+        title: "Partwork",
         render: function(data, type, row) {
-            // Books (=1) and other works (=6) are "standalone works"
+            // Books (=1) and other works (=6) are "whole works"
             // which do not exist within a journal/review or edited volume.
             if (row['priority'] == 1 || row['priority'] == 6) {
-                data = row['standalonework'];
+                data = row['wholework'];
             } else if (data === undefined) {
                 data = "";
             }
@@ -77,8 +90,8 @@ var columns = [
         }
     },
     {
-        data: "standalonework",
-        title: "StandaloneWork",
+        data: "wholework",
+        title: "Wholework",
         render: function(data, type, row) {
             if (data === undefined) {data = "";}
             return data;
@@ -149,15 +162,6 @@ var columns = [
         visible:false
     },
     {
-        data: "priority",
-        title: "Priority",
-        render: function(data, type, row) {
-            if (data === undefined) {data = "";}
-            return data;
-        },
-        visible:false
-    },
-    {
         data: "citationdisplay",
         title: "CitationDisplay",
         render: function(data, type, row) {
@@ -178,12 +182,12 @@ var columns = [
 
             // Format information about "standalone works"
             // (book/journal/media --- all "stand-alone" units)
-            var standalonework_info = `<i>${row['standalonework']}</i>`;
+            var wholework_info = `<i>${row['wholework']}</i>`;
 
             // If work at hand is a book (=1) or other media (=6)
             // Remove info because it's placed in the Title field instead
-            if (row['priority'] == 1 || row['priority'] == 6) {standalonework_info = '';}
-            else if (row['doctype'] === 'bookchapter') {standalonework_info = 'In ' + standalonework_info;}
+            if (row['priority'] == 1 || row['priority'] == 6) {wholework_info = '';}
+            else if (row['doctype'] === 'bookchapter') {wholework_info = 'In ' + wholework_info;}
 
             var number_info = ''; 
             if (row['vol'] !== '' && row['iss'] !== '') {number_info = `, vol. ${row['vol']}, no. ${row['iss']}`;} 
@@ -208,7 +212,7 @@ var columns = [
             else if (row['fpage'] !== '') {page_info = `: ${row['fpage']}`;}
             else if (row['lpage'] !== '') {page_info = `: ${row['lpage']}`;}
             
-            data = `${coauthor_info}${standalonework_info}${number_info}${page_info}${publisher_info}${year_info}`;
+            data = `${coauthor_info}${wholework_info}${number_info}${page_info}${publisher_info}${year_info}`;
             
             // Add period if string doesn't end in period
             if (data.charAt(data.length - 1) !== ".") {data += '.';}
@@ -452,19 +456,19 @@ $(document).ready(function() {
                     myObject = {
                         hash:n[0],
                         doctype: n[1],
-                        author:n[2],
-                        coauthors:n[3],
-                        title:n[4],
-                        standalonework:n[5],
-                        publisher:n[6],
-                        vol:n[7],
-                        iss:n[8],
-                        fpage:n[9],
-                        lpage:n[10],
-                        year:n[11],
-                        link:n[12],
-                        priority:n[13],
-                        citationdisplay:n[12]
+                        priority:n[2],
+                        author:n[3],
+                        coauthors:n[4],
+                        partwork:n[5],
+                        wholework:n[6],
+                        publisher:n[7],
+                        vol:n[8],
+                        iss:n[9],
+                        fpage:n[10],
+                        lpage:n[11],
+                        year:n[12],
+                        link:n[13],
+                        citationdisplay:n[13]
                     };
                     return myObject;
                 });
@@ -475,7 +479,7 @@ $(document).ready(function() {
         'columns': columns,
 
         // Sort by hash, then by priority, then by doctype, then by year, then by title
-        'order': [[ 0, "asc" ], [13,"asc"], [1, "asc"], [ 11, "desc" ], [4, "asc"]],
+        'order': [[0, "asc"], [2,"asc"], [1, "asc"], [12, "desc"], [5, "asc"]],
 
         // When the table has fully loaded
         'initComplete' : function (settings) {
