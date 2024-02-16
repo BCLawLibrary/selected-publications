@@ -4,7 +4,7 @@
  * It is displayed on its own page:
  * (https://www.bc.edu/content/bc-web/schools/law/sites/students/library/using/faculty-services/selected-publications.html)
 
-   Last edited on 13 February 2024, 10:44AM.
+   Last edited on 15 February 2024, 9:47AM.
  */
 
 
@@ -62,8 +62,14 @@ var columns = [
         render: function(data, type, row) {
             // Books (=1) and other works (=6) are "whole works"
             // which do not exist within a journal/review or edited volume.
+            // We separated the columns  for convenience 
+            // So pull from 'wholework' column to fill this field
             if (row['priority'] == 1 || row['priority'] == 6) {
-                data = row['wholework'];
+                if (row['vol'] !== '') {
+                    data = `${row['wholework']}, Vol. ${row['vol']}`;
+                } else {
+                    data = row['wholework'];
+                }
             } else if (data === undefined) {
                 data = "";
             }
@@ -190,7 +196,10 @@ var columns = [
             else if (row['doctype'] === 'bookchapter') {wholework_info = 'In ' + wholework_info;}
 
             var number_info = ''; 
-            if (row['vol'] !== '' && row['iss'] !== '') {number_info = `, vol. ${row['vol']}, no. ${row['iss']}`;} 
+
+            // if work is book or other media, suppress volume/issue info (vol already included in as partwork)
+            if ((row['priority'] == 1 || row['priority'] == 6)) {number_info = '';}
+            else if (row['vol'] !== '' && row['iss'] !== '') {number_info = `, vol. ${row['vol']}, no. ${row['iss']}`;}
             else if (row['vol'] !== '') {number_info = `, vol. ${row['vol']}`;}
             else if (row['iss'] !== '') {number_info = `, no. ${row['iss']}`;}
 
@@ -429,6 +438,7 @@ $(document).ready(function() {
         }
     })
 
+    // remove header row
     faculty_info_list.shift();
     faculty_names.shift();
 
