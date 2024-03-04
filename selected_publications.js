@@ -4,7 +4,7 @@
  * It is displayed on its own page:
  * (https://www.bc.edu/content/bc-web/schools/law/sites/students/library/using/faculty-services/selected-publications.html)
 
-   Last edited on 15 February 2024, 9:47AM.
+   Last edited on 29 February 2024, 8:02AM.
  */
 
 
@@ -214,7 +214,7 @@ var columns = [
             }
 
             var year_info = '';
-            if (row['year'] !== '') {year_info = ` (${row['year']})`;}
+            if (row['year'] !== '') {year_info = ` (${rtrim(row['year'], '* ')})`;}
 
             var page_info = '';
             if (row['fpage'] !== '' && row['lpage'] !== '') {page_info = `: ${row['fpage']}–${row['lpage']}`;}
@@ -280,6 +280,15 @@ function updateLayout(hash) {
         $("#selected-publications-header-mobile").removeClass("yes-hash");
         document.getElementById("welcome-blurb").style.display = "block";
     }
+}
+
+function rtrim(x, characters) {
+    var start = 0;
+    var end = x.length - 1;
+    while (characters.indexOf(x[end]) >= 0) {
+      end -= 1;
+    }
+    return x.substr(0, end + 1);
 }
 
 /* Autocomplete function taken from w3schools
