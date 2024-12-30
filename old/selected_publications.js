@@ -7,6 +7,15 @@
    Last edited on 26 November 2024.
  */
 
+/**
+ * The following program was written by the Department of Collection Services & Digital Initiatives at the Boston College Law Library.
+ * It is a web application that presents a curated selection of the publications of the faculty of Boston College Law School.
+ * It is displayed on its own page:
+ * (https://www.bc.edu/content/bc-web/schools/law/sites/students/library/using/faculty-services/selected-publications.html)
+
+   Last edited on 13 February 2024, 10:44AM.
+ */
+
 var columns = [
   {
     data: "hash",
@@ -69,16 +78,10 @@ var columns = [
     data: "partwork",
     title: "Partwork",
     render: function (data, type, row) {
-      // Books (=1) and other works (=7) are "whole works"
+      // Books (=1) and other works (=6) are "whole works"
       // which do not exist within a journal/review or edited volume.
-      // We separated the columns  for convenience
-      // So pull from 'wholework' column to fill this field
-      if (row["priority"] == 1 || row["priority"] == 7) {
-        if (row["vol"] !== "") {
-          data = `${row["wholework"]}, Vol. ${row["vol"]}`;
-        } else {
-          data = row["wholework"];
-        }
+      if (row["priority"] == 1 || row["priority"] == 6) {
+        data = row["wholework"];
       } else if (data === undefined) {
         data = "";
       }
@@ -220,20 +223,16 @@ var columns = [
       // (book/journal/media --- all "stand-alone" units)
       var wholework_info = `<i>${row["wholework"]}</i>`;
 
-      // If work at hand is a book (=1) or other media (=7)
+      // If work at hand is a book (=1) or other media (=6)
       // Remove info because it's placed in the Title field instead
-      if (row["priority"] == 1 || row["priority"] == 7) {
+      if (row["priority"] == 1 || row["priority"] == 6) {
         wholework_info = "";
       } else if (row["doctype"] === "bookchapter") {
         wholework_info = "In " + wholework_info;
       }
 
       var number_info = "";
-
-      // if work is book or other media, suppress volume/issue info (vol already included in as partwork)
-      if (row["priority"] == 1 || row["priority"] == 7) {
-        number_info = "";
-      } else if (row["vol"] !== "" && row["iss"] !== "") {
+      if (row["vol"] !== "" && row["iss"] !== "") {
         number_info = `, vol. ${row["vol"]}, no. ${row["iss"]}`;
       } else if (row["vol"] !== "") {
         number_info = `, vol. ${row["vol"]}`;
@@ -252,7 +251,7 @@ var columns = [
 
       var year_info = "";
       if (row["year"] !== "") {
-        year_info = ` (${row["year"].replace("*", "")})`;
+        year_info = ` (${row["year"]})`;
       }
 
       var page_info = "";
@@ -487,7 +486,7 @@ $(document).ready(function () {
   }
 
   $.ajax({
-    url: "https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/faculty!A:F?key=AIzaSyD8Y28YJpVhE4XlVlOoA74Ws47YdPz5nGA",
+    url: "https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/faculty!A:F?key=REDACTED",
     type: "GET",
     async: false, // Important!
     success: function (data) {
@@ -515,7 +514,6 @@ $(document).ready(function () {
     },
   });
 
-  // remove header row
   faculty_info_list.shift();
   faculty_names.shift();
 
@@ -536,7 +534,7 @@ $(document).ready(function () {
     pageLength: 999, // Number of rows in page
     ajax: {
       // Pull data from Google Sheet via Sheets API v4
-      url: "https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/pubs!A:N?key=AIzaSyD8Y28YJpVhE4XlVlOoA74Ws47YdPz5nGA",
+      url: "https://sheets.googleapis.com/v4/spreadsheets/1nKPgpNotU2NRH7fY-_bAjvFEc95M3MF_5uREiMyvoiw/values/pubs!A:N?key=REDACTED",
       cache: true,
       dataSrc: function (json) {
         var myData = json["values"];
