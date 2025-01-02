@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="./js/jquery-3.7.1.js"></script>
+    <script src="./js/jquery-ui.js"></script>
+    <script src="./js/papaparse.min.js"></script>
+    <script type="module" src="./js/selected-publications.js"></script>
+    <script src="./js/datatables.min.js"></script>
+    <link href="./css/jquery-ui.css" rel="stylesheet" />
+    <link href="./css/selected-publications.css" rel="stylesheet" />
+    <link href="./css/dataTables.min.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+    </style>
+    <title>SP Test</title>
+  </head>
+  <body class="container">
+    <div class="selected-publications">
+      <h2 class="selected-publications__heading">Selected Publications</h2>
+      <div class="selected-publications__loading-message">
+        Welcome to Selected Publications. This page may take a few seconds to
+        load. If this page does not load, please contact Leo Kim at
+        kimcog@bc.edu.
+      </div>
+      <div class="custom-search">
+        <input
+          class="custom-search__input"
+          placeholder="Search faculty name..."
+        />
+        <button
+          class="custom-search__button fa fa-search"
+          aria-label="Search faculty name"
+        ></button>
+      </div>
+      <div class="selected-publications__page">
+        <div class="faculty-info">
+          <div class="faculty-info__image">
+            <img alt="Portrait of faculty" />
+          </div>
+          <div class="faculty-info__text">
+            <h3 class="faculty-info__name"></h3>
+            <p class="faculty-info__title"></p>
+          </div>
+          <div class="faculty-info__buttons">
+            <a class="faculty-info__profile-button" role="button"> Profile </a>
+            <a class="faculty-info__cv-button" role="button">CV</a>
+          </div>
+        </div>
+        <div class="works-info">
+          <table id="works-table" class="row-border"></table>
+        </div>
+      </div>
+      <img
+        class="library-credit"
+        src="https://www.bc.edu/content/dam/bc1/schools/law/js/library/publication-lists/built_by_bcll_400.png"
+        alt="This application was built by the staff of the Boston College Law Library"
+      />
+    </div>
+  </body>
+</html>
