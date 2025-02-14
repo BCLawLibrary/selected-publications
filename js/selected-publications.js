@@ -38,6 +38,7 @@ function formatCitation(rowData) {
     lpage,
     year,
     url,
+    notes,
   ] = rowData;
 
   priority = Number(priority);
@@ -98,6 +99,13 @@ function formatCitation(rowData) {
     return year ? ` (${year.replace("*", "")})` : "";
   };
 
+  const formatNotes = (notes) => {
+    if (notes !== undefined && notes.trimEnd() !== "") {
+      return `. ${notes}.`;
+    }
+    return "";
+  };
+
   // Build citation components
   const coauthorInfo = formatCoauthors(coauthors);
   // Leave field empty ("") if standalone work
@@ -107,13 +115,13 @@ function formatCitation(rowData) {
   const pageInfo = formatPageInfo(fpage, lpage);
   const publisherInfo = formatPublisher(publisher, doctype);
   const yearInfo = formatYear(year);
+  const notesInfo = formatNotes(notes);
 
   // Title information
   const titleInfo = formatTitle();
 
   // Combine all components into the citation
-  let citation = `${coauthorInfo}${wholeworkInfo}${numberInfo}${pageInfo}${publisherInfo}${yearInfo}`;
-
+  let citation = `${coauthorInfo}${wholeworkInfo}${numberInfo}${pageInfo}${publisherInfo}${yearInfo}${notesInfo}`;
   // Ensure citation ends with a period
   if (!citation.endsWith(".")) citation += ".";
 
@@ -174,6 +182,7 @@ $(document).ready(function () {
       { title: "Last Page", visible: false, searchable: false },
       { title: "Year", visible: false, searchable: false },
       { title: "Link", visible: false, searchable: false },
+      { title: "Notes", visible: false, searchable: false },
       { title: "CitationDisplay", searchable: false }, // Show only formatted citation
     ];
 
