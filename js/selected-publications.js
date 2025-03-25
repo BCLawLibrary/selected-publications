@@ -150,20 +150,16 @@ function formatCategory(str) {
 }
 
 $(document).ready(function () {
-  async function initializePage(url) {
+  async function initializePage(facultyData) {
     // Draw page with faculty info if hash belongs to faculty
     const hash = window.location.hash.replace("#", "");
-    const { facultyData, facultyNames, facultyHashes } = await getFacultyData(
-      url
-    );
+    const facultyHashes = facultyData.data.map((row) => row.Hash);
     if (facultyHashes.includes(hash)) {
       const currentFaculty = facultyData.data.find(
         (faculty) => faculty.Hash === hash
       );
       drawPage(currentFaculty);
     }
-
-    return { facultyData, facultyNames, facultyHashes };
   }
 
   function initializeTable(data) {
@@ -247,7 +243,10 @@ $(document).ready(function () {
 
     const workData = await getWorkData(workUrl);
     await initializeTable(workData);
-    const { facultyData, facultyNames } = await initializePage(facultyUrl);
+    // const { facultyData, facultyNames } = await initializePage(facultyUrl);
+    const facultyData = await fetchCSVData(facultyUrl);
+    const facultyNames = facultyData.data.map((row) => row.Name);
+    await initializePage(facultyData);
 
     // Update loading message
     $(".selected-publications__loading").text(
