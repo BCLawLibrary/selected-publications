@@ -37,6 +37,15 @@
   padding: 1em;
 }
 
+.selected-publications__loading {
+  display: flex;
+  justify-content: center;
+}
+
+.selected-publications__loading img {
+  width: 2rem;
+}
+
 .selected-publications__heading {
   font-size: 38px !important;
   color: var(--primary-brown);

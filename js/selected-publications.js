@@ -235,7 +235,7 @@ $(document).ready(function () {
       $(".faculty-info__cv-button").css("display", "none");
     }
     $(".selected-publications__page").css("display", "flex");
-    $(".selected-publications__loading-message").css("display", "none");
+    $(".selected-publications__loading").css("display", "none");
   }
 
   async function main(facultyUrl, workUrl) {
@@ -250,7 +250,7 @@ $(document).ready(function () {
     const { facultyData, facultyNames } = await initializePage(facultyUrl);
 
     // Update loading message
-    $(".selected-publications__loading-message").text(
+    $(".selected-publications__loading").text(
       "Welcome to Selected Publications. Please search for a faculty member."
     );
 
