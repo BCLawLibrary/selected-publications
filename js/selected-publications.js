@@ -9,18 +9,6 @@ async function fetchCSVData(url) {
   }
 }
 
-async function getWorkData(url) {
-  const workData = await fetchCSVData(url);
-  return workData.data.map(Object.values); // Flatten data to arrays
-}
-
-async function getFacultyData(url) {
-  const facultyData = await fetchCSVData(url);
-  const facultyNames = facultyData.data.map((row) => row.Name);
-  const facultyHashes = facultyData.data.map((row) => row.Hash);
-  return { facultyData, facultyNames, facultyHashes };
-}
-
 function formatCitation(rowData) {
   // Destructure rowData for clarity
   let [
@@ -162,7 +150,8 @@ $(document).ready(function () {
     }
   }
 
-  function initializeTable(data) {
+  function initializeTable(workData) {
+    var data = workData.data.map(Object.values);
     const custom_columns = [
       { title: "Hash", visible: false, searchable: false },
       { title: "DocType", visible: false, searchable: false },
@@ -241,11 +230,9 @@ $(document).ready(function () {
       "Explore selected publications from Boston College Law School faculty."
     );
 
-    const workData = await getWorkData(workUrl);
+    const workData = await fetchCSVData(workUrl);
     await initializeTable(workData);
-    // const { facultyData, facultyNames } = await initializePage(facultyUrl);
     const facultyData = await fetchCSVData(facultyUrl);
-    const facultyNames = facultyData.data.map((row) => row.Name);
     await initializePage(facultyData);
 
     // Update loading message
@@ -254,6 +241,7 @@ $(document).ready(function () {
     );
 
     // Fill custom search bar
+    const facultyNames = facultyData.data.map((row) => row.Name);
     $(".custom-search__input").autocomplete({
       source: facultyNames,
       delay: 0,
