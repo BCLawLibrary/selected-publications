@@ -121,7 +121,7 @@ function formatCitation(rowData) {
   return `${titleInfo}<div>${citation}</div>`;
 }
 
-function formatCategory(str) {
+function formatWorkCategory(str) {
   const titleCase = (str) => {
     return str.replace(
       /\w\S*/g,
@@ -141,59 +141,111 @@ function formatCategory(str) {
   return categories[str] || titleCase(str) + "s";
 }
 
-$(document).ready(function () {
-  function initializeWorkTable(workData) {
-    var data = workData.data.map(Object.values);
-    const custom_columns = [
-      { title: "Hash", visible: false, searchable: false },
-      { title: "DocType", visible: false, searchable: false },
-      { title: "Priority", visible: false, searchable: false },
-      { title: "Author", visible: false }, // Search only by author name
-      { title: "Coauthors", visible: false, searchable: false },
-      { title: "Partwork", visible: false, searchable: false },
-      { title: "Wholework", visible: false, searchable: false },
-      { title: "Publisher", visible: false, searchable: false },
-      { title: "Volume", visible: false, searchable: false },
-      { title: "Issue", visible: false, searchable: false },
-      { title: "First Page", visible: false, searchable: false },
-      { title: "Last Page", visible: false, searchable: false },
-      { title: "Year", visible: false, searchable: false },
-      { title: "Link", visible: false, searchable: false },
-      { title: "Notes", visible: false, searchable: false },
-      { title: "CitationDisplay", searchable: false }, // Show only formatted citation
-    ];
+function initializeWorkTable(workData) {
+  var data = workData.data.map(Object.values);
+  const custom_columns = [
+    { title: "Hash", visible: false, searchable: false },
+    { title: "DocType", visible: false, searchable: false },
+    { title: "Priority", visible: false, searchable: false },
+    { title: "Author", visible: false }, // Search only by author name
+    { title: "Coauthors", visible: false, searchable: false },
+    { title: "Partwork", visible: false, searchable: false },
+    { title: "Wholework", visible: false, searchable: false },
+    { title: "Publisher", visible: false, searchable: false },
+    { title: "Volume", visible: false, searchable: false },
+    { title: "Issue", visible: false, searchable: false },
+    { title: "First Page", visible: false, searchable: false },
+    { title: "Last Page", visible: false, searchable: false },
+    { title: "Year", visible: false, searchable: false },
+    { title: "Link", visible: false, searchable: false },
+    { title: "Notes", visible: false, searchable: false },
+    { title: "CitationDisplay", searchable: false }, // Show only formatted citation
+  ];
 
-    for (let i in data) {
-      data[i].push(formatCitation(data[i])); // Fill in CitationDisplay column
-    }
-
-    const table = new DataTable("#works-table", {
-      dom: "ftr",
-      autoWidth: false,
-      pageLength: 999,
-      data: data,
-      columns: custom_columns,
-      order: [
-        [0, "asc"],
-        [2, "asc"],
-        [1, "asc"],
-        [12, "desc"],
-        [5, "asc"],
-      ],
-      language: { search: "", searchPlaceholder: "Faculty name..." },
-      rowGroup: {
-        dataSrc: 1,
-        startRender: function (rows, group) {
-          return formatCategory(group); // Capitalize and format group headers
-        },
-      },
-      drawCallback: function () {}, // END drawCallback
-    });
-
-    return table;
+  for (let i in data) {
+    data[i].push(formatCitation(data[i])); // Fill in CitationDisplay column
   }
 
+  const table = new DataTable("#works-table", {
+    dom: "ftr",
+    autoWidth: false,
+    pageLength: 999,
+    data: data,
+    columns: custom_columns,
+    order: [
+      [0, "asc"],
+      [2, "asc"],
+      [1, "asc"],
+      [12, "desc"],
+      [5, "asc"],
+    ],
+    language: { search: "", searchPlaceholder: "Faculty name..." },
+    rowGroup: {
+      dataSrc: 1,
+      startRender: function (rows, group) {
+        return formatWorkCategory(group); // Capitalize and format group headers
+      },
+    },
+    drawCallback: function () {}, // END drawCallback
+  });
+
+  return table;
+}
+
+function formatFaculty(rowData) {
+  // Destructure rowData for clarity
+  let [hash, name, title, image, profile, cv, areas] = rowData;
+  let url = window.location.toString().split("#")[0]; // Clear any pre-existing hashes
+  url = `${url}#${hash}`;
+  return `<a class="faculty-table-link" href="${url}">Table cell ${name}</a>`;
+}
+
+function initializeFacultyTable(facultyData) {
+  var data = facultyData.data.map(Object.values);
+
+  const custom_columns = [
+    { title: "Hash", visible: false },
+    { title: "Name", visible: false },
+    { title: "Title", visible: false },
+    { title: "Image", visible: false },
+    { title: "Profile", visible: false },
+    { title: "CV", visible: false },
+    { title: "Areas", visible: false },
+    { title: "FacultyDisplay" }, // Show only formatted citation
+  ];
+
+  for (let i in data) {
+    data[i].push(formatFaculty(data[i])); // Fill in CitationDisplay column
+  }
+
+  const table = new DataTable("#faculty-table", {
+    dom: "ftr",
+    searching: false,
+    autoWidth: false,
+    pageLength: 999,
+    data: data,
+    columns: custom_columns,
+    language: { search: "", searchPlaceholder: "Faculty name..." },
+    drawCallback: function () {}, // END drawCallback
+  });
+
+  return table;
+}
+
+$(document).ready(function () {
   async function initializePage(facultyData) {
+    console.log(window.location.hash.toString().replace("#", ""));
+    if (
+      // if URL has valid hash
+      facultyData.data
+        .map((row) => row.Hash)
+        .includes(window.location.hash.toString().replace("#", ""))
+    ) {
+      $(".faculty-select").css("display", "none");
+    } else {
+      history.pushState("", document.title, window.location.pathname);
+    }
+
     // Draw page with faculty info if hash belongs to faculty
     const hash = window.location.hash.replace("#", "");
     const facultyHashes = facultyData.data.map((row) => row.Hash);
@@ -201,14 +253,13 @@ $(document).ready(function () {
       const currentFaculty = facultyData.data.find(
         (faculty) => faculty.Hash === hash
       );
-      drawPage(currentFaculty);
+      drawFacultyProfile(currentFaculty);
     }
   }
 
-  function drawPage(currentFaculty) {
+  function drawFacultyProfile(currentFaculty) {
     const { Hash, Image, Name, Title, Profile, CV } = currentFaculty;
 
-    window.location.hash = `#${Hash}`;
     /* DataTables native search bar is hidden through CSS 
     but we use it for search functionality */
     $("#dt-search-0").val(Name).trigger("input");
@@ -238,31 +289,49 @@ $(document).ready(function () {
     const workData = await fetchCSVData(workUrl);
     await initializeWorkTable(workData);
     const facultyData = await fetchCSVData(facultyUrl);
+    await initializeFacultyTable(facultyData);
+
     await initializePage(facultyData);
 
     // Update loading message
-    $(".selected-publications__loading").text(
-      "Welcome to Selected Publications. Please search for a faculty member."
-    );
+    $(".selected-publications__loading").hide();
 
-    // Fill custom search bar
+    // Initialize custom search bar
     const facultyNames = facultyData.data.map((row) => row.Name);
     $(".custom-search__input").autocomplete({
       source: facultyNames,
       delay: 0,
     });
 
-    $(".custom-search").css("display", "flex"); // Unhide custom search bar
+    // Unhide custom search bar
+    $(".custom-search").css("display", "flex");
 
+    // When search button is clicked, update hash if valid
     $(".ui-autocomplete, .custom-search__button").on("click", function () {
       let currentFaculty = facultyData.data.find(
-        (faculty) => faculty.Name === $(".custom-search__input").val()
+        // Given each row, see if row.Name === search string
+        // .find() returns first true item
+        (row) => row.Name === $(".custom-search__input").val()
       );
 
       if (currentFaculty) {
-        drawPage(currentFaculty);
+        window.location.hash = `#${currentFaculty.Hash}`; // Update hash
+        $(".custom-search__input").val(""); // Clear search bar
       }
-      $(".custom-search__input").val("");
+    });
+
+    $(window).on("hashchange", function () {
+      if (window.location.hash) {
+        let currentFaculty = facultyData.data.find(
+          (row) => `#${row.Hash}` === window.location.hash
+        );
+        drawFacultyProfile(currentFaculty);
+        $(".selected-publications__page").show();
+        $(".faculty-select").hide();
+      } else {
+        $(".faculty-select").show();
+        $(".selected-publications__page").hide();
+      }
     });
   }
 
@@ -270,9 +339,11 @@ $(document).ready(function () {
   $(window).on("beforeunload", function () {
     $(".custom-search__input").val("");
   });
+
   const facultyUrl =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgfjiHQuIxuj6_p2vuAskviCh7XPl3J19aZO7Fiyl_cIR__LcTl1WfWCLBqQGmVPXklqOFfE2wwDqs/pub?gid=1091124444&single=true&output=csv";
   const workUrl =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgfjiHQuIxuj6_p2vuAskviCh7XPl3J19aZO7Fiyl_cIR__LcTl1WfWCLBqQGmVPXklqOFfE2wwDqs/pub?gid=132604372&single=true&output=csv";
+
   main(facultyUrl, workUrl);
 });

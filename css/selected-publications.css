@@ -97,6 +97,10 @@ input {
   flex-direction: row;
 }
 
+#faculty-table thead {
+  display: none;
+}
+
 .faculty-info {
   display: flex;
   align-items: center;
