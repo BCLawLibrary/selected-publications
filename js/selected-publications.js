@@ -1,11 +1,14 @@
 async function fetchCSVData(url) {
+  /* Takes Google Sheets URL and returns an object.
+     Object.data is an array of objects, 
+     in which each object is a line on the spreadsheet. */
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error("Failed to fetch CSV");
     return Papa.parse(await response.text(), { header: true });
   } catch (error) {
     console.error(error);
-    return { data: [] }; // Return empty data in case of error
+    return { data: [] }; // Return empty object in case of error
   }
 }
 
@@ -110,6 +113,7 @@ function formatCitation(rowData) {
 
   // Combine all components into the citation
   let citation = `${coauthorInfo}${wholeworkInfo}${numberInfo}${pageInfo}${publisherInfo}${yearInfo}${notesInfo}`;
+
   // Ensure citation ends with a period
   if (!citation.endsWith(".")) citation += ".";
 
@@ -138,19 +142,7 @@ function formatCategory(str) {
 }
 
 $(document).ready(function () {
-  async function initializePage(facultyData) {
-    // Draw page with faculty info if hash belongs to faculty
-    const hash = window.location.hash.replace("#", "");
-    const facultyHashes = facultyData.data.map((row) => row.Hash);
-    if (facultyHashes.includes(hash)) {
-      const currentFaculty = facultyData.data.find(
-        (faculty) => faculty.Hash === hash
-      );
-      drawPage(currentFaculty);
-    }
-  }
-
-  function initializeTable(workData) {
+  function initializeWorkTable(workData) {
     var data = workData.data.map(Object.values);
     const custom_columns = [
       { title: "Hash", visible: false, searchable: false },
@@ -174,6 +166,7 @@ $(document).ready(function () {
     for (let i in data) {
       data[i].push(formatCitation(data[i])); // Fill in CitationDisplay column
     }
+
     const table = new DataTable("#works-table", {
       dom: "ftr",
       autoWidth: false,
@@ -198,6 +191,18 @@ $(document).ready(function () {
     });
 
     return table;
+  }
+
+  async function initializePage(facultyData) {
+    // Draw page with faculty info if hash belongs to faculty
+    const hash = window.location.hash.replace("#", "");
+    const facultyHashes = facultyData.data.map((row) => row.Hash);
+    if (facultyHashes.includes(hash)) {
+      const currentFaculty = facultyData.data.find(
+        (faculty) => faculty.Hash === hash
+      );
+      drawPage(currentFaculty);
+    }
   }
 
   function drawPage(currentFaculty) {
@@ -231,7 +236,7 @@ $(document).ready(function () {
     );
 
     const workData = await fetchCSVData(workUrl);
-    await initializeTable(workData);
+    await initializeWorkTable(workData);
     const facultyData = await fetchCSVData(facultyUrl);
     await initializePage(facultyData);
 
