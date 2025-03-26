@@ -197,7 +197,7 @@ function formatFaculty(rowData) {
   let [hash, name, title, image, profile, cv, areas] = rowData;
   let url = window.location.toString().split("#")[0]; // Clear any pre-existing hashes
   url = `${url}#${hash}`;
-  return `<a class="faculty-table-link" href="${url}">Table cell ${name}</a>`;
+  return `<a class="faculty-table-link" href="${url}"><div class="faculty-table-cell"><div class="faculty-table-image"><img src="${image}" /></div>${name}</div></a>`;
 }
 
 function initializeFacultyTable(facultyData) {
@@ -234,7 +234,6 @@ function initializeFacultyTable(facultyData) {
 
 $(document).ready(function () {
   async function initializePage(facultyData) {
-    console.log(window.location.hash.toString().replace("#", ""));
     if (
       // if URL has valid hash
       facultyData.data
