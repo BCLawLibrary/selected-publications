@@ -49,6 +49,7 @@
 .selected-publications__heading {
   font-size: 38px !important;
   color: var(--primary-brown);
+  cursor: pointer;
   font-weight: 100;
   margin: 0;
 }
@@ -97,9 +98,10 @@ input {
   flex-direction: row;
 }
 
-.faculty-select {
+#faculty-table {
   border-top: 1px solid #e0e0e0;
 }
+
 #faculty-table thead {
   display: none;
 }

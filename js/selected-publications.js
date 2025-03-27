@@ -232,52 +232,52 @@ function initializeFacultyTable(facultyData) {
   return table;
 }
 
+function drawFacultyProfile(currentFaculty) {
+  const { Hash, Image, Name, Title, Profile, CV } = currentFaculty;
+
+  /* DataTables native search bar is hidden through CSS 
+  but we use it for search functionality */
+  $("#dt-search-0").val(Name).trigger("input");
+  $(".faculty-info__image").children("img").attr("src", Image);
+  $(".faculty-info__name").text(Name);
+  $(".faculty-info__title").text(Title);
+  $(".faculty-info__profile-button").attr("href", Profile);
+  if (CV) {
+    $(".faculty-info__buttons").css("grid-template-columns", "1fr 1fr");
+    $(".faculty-info__cv-button").css("display", "inline-block");
+    $(".faculty-info__cv-button").attr("href", CV);
+  } else {
+    $(".faculty-info__buttons").css("grid-template-columns", "1fr");
+    $(".faculty-info__cv-button").css("display", "none");
+  }
+  $(".selected-publications__page").css("display", "flex");
+  $(".selected-publications__loading").css("display", "none");
+}
+
+async function initializePage(facultyData) {
+  if (
+    // if URL has valid hash
+    facultyData.data
+      .map((row) => row.Hash)
+      .includes(window.location.hash.toString().replace("#", ""))
+  ) {
+    $(".faculty-select").css("display", "none");
+  } else {
+    history.pushState("", document.title, window.location.pathname);
+  }
+
+  // Draw page with faculty info if hash belongs to faculty
+  const hash = window.location.hash.replace("#", "");
+  const facultyHashes = facultyData.data.map((row) => row.Hash);
+  if (facultyHashes.includes(hash)) {
+    const currentFaculty = facultyData.data.find(
+      (faculty) => faculty.Hash === hash
+    );
+    drawFacultyProfile(currentFaculty);
+  }
+}
+
 $(document).ready(function () {
-  async function initializePage(facultyData) {
-    if (
-      // if URL has valid hash
-      facultyData.data
-        .map((row) => row.Hash)
-        .includes(window.location.hash.toString().replace("#", ""))
-    ) {
-      $(".faculty-select").css("display", "none");
-    } else {
-      history.pushState("", document.title, window.location.pathname);
-    }
-
-    // Draw page with faculty info if hash belongs to faculty
-    const hash = window.location.hash.replace("#", "");
-    const facultyHashes = facultyData.data.map((row) => row.Hash);
-    if (facultyHashes.includes(hash)) {
-      const currentFaculty = facultyData.data.find(
-        (faculty) => faculty.Hash === hash
-      );
-      drawFacultyProfile(currentFaculty);
-    }
-  }
-
-  function drawFacultyProfile(currentFaculty) {
-    const { Hash, Image, Name, Title, Profile, CV } = currentFaculty;
-
-    /* DataTables native search bar is hidden through CSS 
-    but we use it for search functionality */
-    $("#dt-search-0").val(Name).trigger("input");
-    $(".faculty-info__image").children("img").attr("src", Image);
-    $(".faculty-info__name").text(Name);
-    $(".faculty-info__title").text(Title);
-    $(".faculty-info__profile-button").attr("href", Profile);
-    if (CV) {
-      $(".faculty-info__buttons").css("grid-template-columns", "1fr 1fr");
-      $(".faculty-info__cv-button").css("display", "inline-block");
-      $(".faculty-info__cv-button").attr("href", CV);
-    } else {
-      $(".faculty-info__buttons").css("grid-template-columns", "1fr");
-      $(".faculty-info__cv-button").css("display", "none");
-    }
-    $(".selected-publications__page").css("display", "flex");
-    $(".selected-publications__loading").css("display", "none");
-  }
-
   async function main(facultyUrl, workUrl) {
     // Fill meta tag for SEO
     $("[name='description']").attr(
@@ -289,11 +289,7 @@ $(document).ready(function () {
     await initializeWorkTable(workData);
     const facultyData = await fetchCSVData(facultyUrl);
     await initializeFacultyTable(facultyData);
-
     await initializePage(facultyData);
-
-    // Update loading message
-    $(".selected-publications__loading").hide();
 
     // Initialize custom search bar
     const facultyNames = facultyData.data.map((row) => row.Name);
@@ -305,7 +301,10 @@ $(document).ready(function () {
     // Unhide custom search bar
     $(".custom-search").css("display", "flex");
 
-    // When search button is clicked, update hash if valid
+    // Update loading message
+    $(".selected-publications__loading").hide();
+
+    // If search button or autocomplete is clicked, update hash if valid
     $(".ui-autocomplete, .custom-search__button").on("click", function () {
       let currentFaculty = facultyData.data.find(
         // Given each row, see if row.Name === search string
@@ -319,6 +318,12 @@ $(document).ready(function () {
       }
     });
 
+    $(".selected-publications__heading").on("click", function () {
+      history.pushState("", document.title, window.location.pathname);
+      $(window).trigger("hashchange");
+    });
+
+    // Listen for hash change
     $(window).on("hashchange", function () {
       if (window.location.hash) {
         let currentFaculty = facultyData.data.find(
@@ -331,6 +336,7 @@ $(document).ready(function () {
         $(".faculty-select").show();
         $(".selected-publications__page").hide();
       }
+      $(window).scrollTop(0);
     });
   }
 
