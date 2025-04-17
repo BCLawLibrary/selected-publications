@@ -159,6 +159,7 @@ function initializeWorkTable(workData) {
     { title: "Year", visible: false, searchable: false },
     { title: "Link", visible: false, searchable: false },
     { title: "Notes", visible: false, searchable: false },
+    { title: "Areas", visible: false, searchable: false },
     { title: "CitationDisplay", searchable: false }, // Show only formatted citation
   ];
 
