@@ -202,7 +202,7 @@ function formatFaculty(rowData) {
   return `<a class="faculty-table-link" href="${url}"><div class="faculty-table-cell"><div class="faculty-table-image"><img src="${image}" /></div>${name}</div></a>`;
 }
 
-function initializeFacultyTable(facultyData) {
+function initializeFacultyTable(facultyData, workFaculty) {
   var data = facultyData.data.map(Object.values);
 
   const custom_columns = [
@@ -213,11 +213,16 @@ function initializeFacultyTable(facultyData) {
     { title: "Profile", visible: false },
     { title: "CV", visible: false },
     { title: "Areas", visible: false },
+    { title: "Status", visible: false },
     { title: "FacultyDisplay" }, // Show only formatted citation
   ];
 
+  var filteredData = [];
   for (let i in data) {
-    data[i].push(formatFaculty(data[i])); // Fill in CitationDisplay column
+    if (workFaculty.includes(data[i][0])) {
+      data[i].push(formatFaculty(data[i]));
+      filteredData.push(data[i]);
+    }
   }
 
   const table = new DataTable("#faculty-table", {
@@ -225,7 +230,7 @@ function initializeFacultyTable(facultyData) {
     searching: false,
     autoWidth: false,
     pageLength: 999,
-    data: data,
+    data: filteredData,
     columns: custom_columns,
     language: { search: "", searchPlaceholder: "Faculty name..." },
     drawCallback: function () {}, // END drawCallback
@@ -279,6 +284,9 @@ async function initializePage(facultyData) {
   }
 }
 
+async function getWorkFaculty(workData) {
+  return [...new Set(workData.data.map((object) => object.hash))];
+}
 $(document).ready(function () {
   async function main(facultyUrl, workUrl) {
     // Fill meta tag for SEO
@@ -289,8 +297,10 @@ $(document).ready(function () {
 
     const workData = await fetchCSVData(workUrl);
     await initializeWorkTable(workData);
+    // [... ] is the spread operator unpacking the set into an array.
+    const workFaculty = await getWorkFaculty(workData);
     const facultyData = await fetchCSVData(facultyUrl);
-    await initializeFacultyTable(facultyData);
+    await initializeFacultyTable(facultyData, workFaculty);
     await initializePage(facultyData);
 
     // Initialize custom search bar
