@@ -86,8 +86,9 @@ function formatCitation(rowData) {
     return doctype === "bookchapter" ? `. ${publisher}` : ` ${publisher}`;
   };
 
+  // Use * to force within-year custom order
   const formatYear = (year) => {
-    return year ? ` (${year.replace("*", "")})` : "";
+    return year ? ` (${year.replaceAll("*", "")})` : "";
   };
 
   const formatNotes = (notes) => {
