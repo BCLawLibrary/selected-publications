@@ -304,7 +304,9 @@ $(document).ready(function () {
     await initializePage(facultyData);
 
     // Initialize custom search bar
-    const facultyNames = facultyData.data.map((row) => row.Name);
+    const facultyNames = facultyData.data
+      .filter((row) => workFaculty.includes(row.Hash))
+      .map((row) => row.Name);
     $(".custom-search__input").autocomplete({
       source: facultyNames,
       delay: 0,
