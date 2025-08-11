@@ -44,6 +44,10 @@ function formatCitation(rowData) {
     if (isStandAlone) {
       if (vol) title += `, Vol. ${vol}`;
     }
+
+    if (notes === "pinned")
+      title = `<i class="fa-solid fa-map-pin"></i> ` + title;
+
     // Make title into link if URL is present
     if (url) {
       title = `<div class="work-title"><a href="${url}">${title}</a> <span class="fa-solid fa-square-arrow-up-right"></span></div>`;
@@ -88,10 +92,14 @@ function formatCitation(rowData) {
 
   // Use * to force within-year custom order
   const formatYear = (year) => {
+    if (year.replaceAll("*", "") === "3000max") {
+      return "";
+    }
     return year ? ` (${year.replaceAll("*", "")})` : "";
   };
 
   const formatNotes = (notes) => {
+    if (notes === "pinned") return "";
     if (notes !== undefined && notes.trimEnd() !== "") {
       return `. ${notes}.`;
     }
