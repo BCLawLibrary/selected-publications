@@ -269,11 +269,11 @@ function drawFacultyProfile(currentFaculty) {
   $(".selected-publications__loading").css("display", "none");
 }
 
-async function initializePage(facultyData) {
+async function initializePage(facultyData, workData) {
   if (
     // if URL has valid hash
-    facultyData.data
-      .map((row) => row.Hash)
+    workData.data
+      .map((row) => row.hash)
       .includes(window.location.hash.toString().replace("#", ""))
   ) {
     $(".faculty-select").css("display", "none");
@@ -283,7 +283,7 @@ async function initializePage(facultyData) {
 
   // Draw page with faculty info if hash belongs to faculty
   const hash = window.location.hash.replace("#", "");
-  const facultyHashes = facultyData.data.map((row) => row.Hash);
+  const facultyHashes = [...new Set(workData.data.map((row) => row.hash))];
   if (facultyHashes.includes(hash)) {
     const currentFaculty = facultyData.data.find(
       (faculty) => faculty.Hash === hash
@@ -309,7 +309,7 @@ $(document).ready(function () {
     const workFaculty = await getWorkFaculty(workData);
     const facultyData = await fetchCSVData(facultyUrl);
     await initializeFacultyTable(facultyData, workFaculty);
-    await initializePage(facultyData);
+    await initializePage(facultyData, workData);
 
     // Initialize custom search bar
     const facultyNames = facultyData.data
@@ -346,14 +346,21 @@ $(document).ready(function () {
     });
 
     // Listen for hash change
+    const facultyHashes = [...new Set(workData.data.map((row) => row.hash))];
     $(window).on("hashchange", function () {
       if (window.location.hash) {
-        let currentFaculty = facultyData.data.find(
-          (row) => `#${row.Hash}` === window.location.hash
-        );
-        drawFacultyProfile(currentFaculty);
-        $(".selected-publications__page").show();
-        $(".faculty-select").hide();
+        var facultyHash = window.location.hash.replace(/^#/, "");
+        if (facultyHashes.includes(facultyHash)) {
+          let currentFaculty = facultyData.data.find(
+            (row) => `#${row.Hash}` === window.location.hash
+          );
+          drawFacultyProfile(currentFaculty);
+          $(".selected-publications__page").show();
+          $(".faculty-select").hide();
+        } else {
+          $(".faculty-select").show();
+          $(".selected-publications__page").hide();
+        }
       } else {
         $(".faculty-select").show();
         $(".selected-publications__page").hide();
