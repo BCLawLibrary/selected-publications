@@ -230,6 +230,10 @@ input {
   width: 150px;
 }
 
+.library-credit img {
+  width: 100%;
+}
+
 @media (max-width: 991px) {
   .admin-dept .bulk-wrap .breadcrumb-wrap {
     display: none;
